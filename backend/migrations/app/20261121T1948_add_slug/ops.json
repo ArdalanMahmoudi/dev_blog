@@ -1,0 +1,85 @@
+[
+  {
+    "id": "column.Post.slug",
+    "label": "Add column slug to Post",
+    "summary": "Adds column slug to table Post",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Post"
+      }
+    },
+    "operationClass": "additive",
+    "precheck": [
+      {
+        "description": "ensure column \"slug\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Post",
+          "slug"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"slug\" on \"Post\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"slug\"",
+        "sql": "ALTER TABLE \"public\".\"Post\" ADD COLUMN \"slug\" text DEFAULT ('') NOT NULL"
+      },
+      {
+        "description": "drop temporary default from column \"slug\"",
+        "sql": "ALTER TABLE \"public\".\"Post\" ALTER COLUMN \"slug\" DROP DEFAULT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"slug\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Post",
+          "slug"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"slug\" on \"Post\""
+        }
+      },
+      {
+        "description": "verify column \"slug\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "Post",
+          "slug",
+          "NO"
+        ]
+      },
+      {
+        "description": "verify column \"slug\" has no default after temporary default removal",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"column_default\" IS NOT NULL)) AS \"result\"",
+        "params": [
+          "public",
+          "Post",
+          "slug"
+        ]
+      },
+      {
+        "description": "verify column \"slug\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Post",
+          "slug",
+          "text"
+        ]
+      }
+    ]
+  }
+]

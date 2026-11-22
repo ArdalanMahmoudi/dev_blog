@@ -1,0 +1,32 @@
+// use prisma-8
+model User {
+  id        Int                @id @default(autoincrement())
+  email     String             @unique
+  password  String             @unique
+  posts     Post[]
+  createdAt DateTime           @default(now()) @onCreate(now())
+  updatedAt temporal.UpdatedAt
+}
+
+model Post {
+  id          Int                 @id @default(autoincrement())
+  title       String
+  slug        String
+  content     String?
+  excerpt     String?
+  published   Boolean             @default(false)
+  publishedAt temporal.CreatedAt?
+  author      User                @relation(fields: [authorId], references: [id])
+  authorId    Int
+  category    Category            @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  createdAt   DateTime            @default(now()) @onCreate(now())
+  updatedAt   temporal.UpdatedAt
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String
+  slug  String @unique
+  posts Post[]
+}
