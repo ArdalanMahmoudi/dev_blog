@@ -3,6 +3,7 @@ model User {
   id        Int                @id @default(autoincrement())
   email     String             @unique
   password  String             @unique
+  isAdmin   Boolean            @default(false)
   posts     Post[]
   createdAt DateTime           @default(now()) @onCreate(now())
   updatedAt temporal.UpdatedAt
@@ -11,8 +12,8 @@ model User {
 model Post {
   id          Int                 @id @default(autoincrement())
   title       String
-  slug        String
-  content     String?
+  slug        String              @unique
+  content     String
   excerpt     String?
   published   Boolean             @default(false)
   publishedAt temporal.CreatedAt?

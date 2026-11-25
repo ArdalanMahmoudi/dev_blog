@@ -95,7 +95,7 @@
                 }
               },
               "content": {
-                "nullable": true,
+                "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -267,6 +267,13 @@
                   "kind": "scalar"
                 }
               },
+              "isAdmin": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "password": {
                 "nullable": false,
                 "type": {
@@ -312,6 +319,9 @@
                 },
                 "id": {
                   "column": "id"
+                },
+                "isAdmin": {
+                  "column": "isAdmin"
                 },
                 "password": {
                   "column": "password"
@@ -385,7 +395,7 @@
                 "content": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
-                  "nullable": true
+                  "nullable": false
                 },
                 "createdAt": {
                   "codecId": "pg/timestamptz-date@1",
@@ -512,7 +522,13 @@
                   "id"
                 ]
               },
-              "uniques": []
+              "uniques": [
+                {
+                  "columns": [
+                    "slug"
+                  ]
+                }
+              ]
             },
             "User": {
               "columns": {
@@ -539,6 +555,15 @@
                   "default": {
                     "expression": "autoincrement()",
                     "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "isAdmin": {
+                  "codecId": "pg/bool@1",
+                  "dataType": "pg/bool",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
                   },
                   "nullable": false
                 },
@@ -582,7 +607,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "db498e8876217996e0aa2e00268402dcf5de1256425af7473b2fe3c0b3e1e84d"
+    "storageHash": "0f93c7d1aee9e350193a3b394750926834c3580f74ec1170648b4ba22208e838"
   },
   "execution": {
     "executionHash": "4282d15b5387558670c59e0c5765bed233316c30acb0b6028bf1aebd9e49896d",
